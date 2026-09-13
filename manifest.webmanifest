@@ -1,0 +1,10 @@
+{
+ "name": "Finance Desk",
+ "short_name": "Desk",
+ "start_url": "./",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#F1F3F5",
+ "theme_color": "#2E7D5B",
+ "icons": [{"src": "icon.svg", "sizes": "any", "type": "image/svg+xml"}]
+}
