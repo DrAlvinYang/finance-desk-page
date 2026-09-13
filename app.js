@@ -1,7 +1,7 @@
-/* The Finance Desk page.
+/* The Finance System's web page.
  *
- * In plain words: this page reads the summary the MacBook pinned up (desk-summary.json) and the forms
- * (desk-forms.json) from Alvin's private mailbox on GitHub, and posts what he types back to the same
+ * In plain words: this page reads the summary the MacBook pinned up (webpage-summary.json) and the forms
+ * (webpage-forms.json) from Alvin's private mailbox on GitHub, and posts what he types back to the same
  * mailbox as notes (GitHub "issues"). It never works anything out that the MacBook has not worked out
  * first; the one sum it does is the sweep, from figures the summary gives it.
  *
@@ -13,17 +13,17 @@
  * All text from the summary is shown as text, never as HTML. The page talks to api.github.com and
  * nowhere else (the Content-Security-Policy in index.html enforces it).
  *
- * Source: desk/ in the Finance System repository; tools/finance-desk.py deploy copies it to the page's own
+ * Source: webpage/ in the Finance System repository; tools/finance-system-webpage.py deploy copies it to the page's own
  * public repository, which holds code only. Written 2026-09-13 under D-2026-09-13-01.
  */
 "use strict";
 
-// GitHub's address. Only tools/test-desk-page.mjs changes it, through config.json, to a stand-in on
+// GitHub's address. Only a test changes it, through config.json, to a stand-in on
 // the same machine; the published config.json never names one.
 const api = () => (CFG && CFG.api) || "https://api.github.com";
-const MARKER = "finance-desk-entry";
-const K = { token: "desk.token", cfg: "desk.cfg", snap: "desk.snapshot", schema: "desk.schema",
-            outbox: "desk.outbox", sent: "desk.sent", expiry: "desk.expiry", tab: "desk.tab", waiting: "desk.waiting" };
+const MARKER = "finance-system-web-entry";
+const K = { token: "finance-system.token", cfg: "finance-system.cfg", snap: "finance-system.snapshot", schema: "finance-system.schema",
+            outbox: "finance-system.outbox", sent: "finance-system.sent", expiry: "finance-system.expiry", tab: "finance-system.tab", waiting: "finance-system.waiting" };
 const STALE_HOURS = 2;
 
 let CFG = null, SNAP = null, SCHEMA = null;
@@ -102,11 +102,11 @@ function token() { return load(K.token, ""); }
 
 /* ---------- talking to GitHub ---------- */
 
-class DeskError extends Error { constructor(kind, msg) { super(msg); this.kind = kind; } }
+class PageError extends Error { constructor(kind, msg) { super(msg); this.kind = kind; } }
 
 async function gh(path, opts = {}) {
-  if (!token()) throw new DeskError("key", "No key on this device yet. Add it under Key.");
-  if (!CFG || !CFG.github_owner || !CFG.mailbox_repository) throw new DeskError("error", "The page does not know which mailbox to use.");
+  if (!token()) throw new PageError("key", "No key on this device yet. Add it under Key.");
+  if (!CFG || !CFG.github_owner || !CFG.mailbox_repository) throw new PageError("error", "The page does not know which mailbox to use.");
   let r;
   try {
     r = await fetch(api() + path, {
@@ -116,13 +116,13 @@ async function gh(path, opts = {}) {
                              opts.body ? { "Content-Type": "application/json" } : {})
     });
   } catch (e) {
-    throw new DeskError("offline", "No connection. Your entries are saved on this device and will send later.");
+    throw new PageError("offline", "No connection. Your entries are saved on this device and will send later.");
   }
   const exp = r.headers.get("github-authentication-token-expiration");
   if (exp) save(K.expiry, exp);
-  if (r.status === 401) throw new DeskError("key", "GitHub refused the key. It may have expired or been typed wrongly: make a new one and paste it under Key.");
-  if (r.status === 403 || r.status === 404) throw new DeskError("key", "The key cannot reach the mailbox. It must allow the repository " + CFG.github_owner + "/" + CFG.mailbox_repository + " (Contents: read, Issues: read and write).");
-  if (!r.ok) throw new DeskError("error", "GitHub answered " + r.status + ". Try again in a few minutes.");
+  if (r.status === 401) throw new PageError("key", "GitHub refused the key. It may have expired or been typed wrongly: make a new one and paste it under Key.");
+  if (r.status === 403 || r.status === 404) throw new PageError("key", "The key cannot reach the mailbox. It must allow the repository " + CFG.github_owner + "/" + CFG.mailbox_repository + " (Contents: read, Issues: read and write).");
+  if (!r.ok) throw new PageError("error", "GitHub answered " + r.status + ". Try again in a few minutes.");
   return r;
 }
 const repo = () => `/repos/${encodeURIComponent(CFG.github_owner)}/${encodeURIComponent(CFG.mailbox_repository)}`;
@@ -131,10 +131,10 @@ async function refresh() {
   try {
     const raw = "application/vnd.github.raw+json";
     const [s, f] = await Promise.all([
-      gh(repo() + "/contents/desk-summary.json", { accept: raw }).then(r => r.json()),
-      gh(repo() + "/contents/desk-forms.json", { accept: raw }).then(r => r.json()).catch(() => SCHEMA)
+      gh(repo() + "/contents/webpage-summary.json", { accept: raw }).then(r => r.json()),
+      gh(repo() + "/contents/webpage-forms.json", { accept: raw }).then(r => r.json()).catch(() => SCHEMA)
     ]);
-    if (s && s.desk === "finance-desk-summary") { SNAP = s; save(K.snap, s); }
+    if (s && s.format === "finance-system-webpage-summary") { SNAP = s; save(K.snap, s); }
     if (f && f.forms) { SCHEMA = f; save(K.schema, f); }
     const issues = await gh(repo() + "/issues?state=open&per_page=100").then(r => r.json());
     const waiting = issues.filter(i => !i.pull_request && typeof i.body === "string" && i.body.indexOf(MARKER) >= 0).length;
@@ -155,7 +155,7 @@ async function flush() {
     while (box.length) {
       const entry = box[0];
       try {
-        const r = await gh(repo() + "/issues", { method: "POST", body: JSON.stringify({ title: "Finance Desk entry, waiting for the MacBook to collect it", body: JSON.stringify(entry) }) });
+        const r = await gh(repo() + "/issues", { method: "POST", body: JSON.stringify({ title: "Finance System web entry, waiting for the MacBook to collect it", body: JSON.stringify(entry) }) });
         const j = await r.json();
         const sent = load(K.sent, []);
         sent.unshift({ entry, number: j.number, sent_at: new Date().toISOString() });
@@ -175,7 +175,7 @@ async function flush() {
 }
 
 function submit(kind, fields, corrects) {
-  const entry = { desk: MARKER, id: newId(), kind, typed_at: typedAt(), device: device(), fields };
+  const entry = { format: MARKER, id: newId(), kind, typed_at: typedAt(), device: device(), fields };
   if (corrects) entry.corrects = corrects;
   const box = load(K.outbox, []);
   box.push(entry);
@@ -215,7 +215,7 @@ function renderToday() {
   const p = clear(document.getElementById("today"));
   if (NET === "key" || NET === "error") p.append(h("div", { class: "card warn" }, h("h3", { text: "Something needs you" }), h("p", { text: NET_MSG })));
   if (!SNAP) {
-    p.append(h("div", { class: "card" }, h("p", { text: token() ? "The summary has not arrived yet. If the MacBook has never published one, run tools/finance-desk.py setup on it." : "This device has no key yet. Open Key, paste the key you made for this device, and the summary will appear." })));
+    p.append(h("div", { class: "card" }, h("p", { text: token() ? "The summary has not arrived yet. If the MacBook has never published one, run tools/finance-system-webpage.py setup on it." : "This device has no key yet. Open Key, paste the key you made for this device, and the summary will appear." })));
     return;
   }
   const m = SNAP.machine || {};
