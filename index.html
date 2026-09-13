@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Desk">
+<meta name="theme-color" content="#2E7D5B">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+<title>Finance Desk</title>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="dot" aria-hidden="true"></span>Finance Desk</div>
+  <div id="fresh" class="fresh" role="status" aria-live="polite">Loading…</div>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Sections">
+  <button role="tab" id="tab-today" data-tab="today" aria-selected="true">Today</button>
+  <button role="tab" id="tab-enter" data-tab="enter" aria-selected="false">Enter</button>
+  <button role="tab" id="tab-overview" data-tab="overview" aria-selected="false">Overview</button>
+  <button role="tab" id="tab-key" data-tab="key" aria-selected="false">Key</button>
+</nav>
+
+<main>
+  <section id="today" class="panel" role="tabpanel" aria-labelledby="tab-today"></section>
+  <section id="enter" class="panel" role="tabpanel" aria-labelledby="tab-enter" hidden></section>
+  <section id="overview" class="panel" role="tabpanel" aria-labelledby="tab-overview" hidden></section>
+  <section id="key" class="panel" role="tabpanel" aria-labelledby="tab-key" hidden></section>
+</main>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+<noscript><p class="noscript">The Desk needs JavaScript turned on.</p></noscript>
+<script src="app.js"></script>
+</body>
+</html>
