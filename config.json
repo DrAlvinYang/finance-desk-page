@@ -1,4 +1,5 @@
 {
- "owner": "DrAlvinYang",
- "mailbox": "finance-desk"
+ "about": "The Finance Desk page's settings: which private repository holds its summary and entries. No data and no secret.",
+ "github_owner": "DrAlvinYang",
+ "mailbox_repository": "finance-system-desk-mailbox-private"
 }
