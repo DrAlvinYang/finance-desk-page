@@ -1,8 +1,8 @@
-/* Lets the Desk open with no signal. The page's own files are fetched fresh when there is a
+/* Lets the web page open with no signal. The page's own files are fetched fresh when there is a
    connection and kept, so the last good copy opens when there is not. Requests to GitHub's API are
    never touched here: the page keeps its own saved summary and its outbox. */
 "use strict";
-const CACHE = "desk-page-v1";
+const CACHE = "finance-system-webpage-v1";
 const FILES = ["./", "index.html", "app.js", "style.css", "config.json", "manifest.webmanifest", "icon.svg"];
 
 self.addEventListener("install", ev => {
