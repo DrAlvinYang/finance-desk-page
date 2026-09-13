@@ -1,6 +1,6 @@
 {
  "name": "Finance Desk",
- "short_name": "Desk",
+ "short_name": "Finance Desk",
  "start_url": "./",
  "scope": "./",
  "display": "standalone",
