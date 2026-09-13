@@ -1,0 +1,110 @@
+/* The Finance Desk. Yellow is always what you wrote; green is always what the bookkeeper wrote,
+   the same colours as the explainer "The bookkeeper and the board". */
+:root {
+  --ground: #F1F3F5; --panel: #FFFFFF; --ink: #1F2429; --ink-2: #5A626B; --line: #D5DAE0;
+  --note: #F5D565; --note-soft: #FDF4D0; --note-ink: #3B3212;
+  --book: #2E7D5B; --book-soft: #DDF0E6; --book-ink: #FFFFFF;
+  --warn: #B3261E; --warn-soft: #FBE3E1; --wait: #9A6B00;
+  --focus: #1D5FBF;
+  --radius: 10px;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ground: #14181C; --panel: #1C2126; --ink: #E7EAED; --ink-2: #A8B0B8; --line: #2F363D;
+    --note: #E6C659; --note-soft: #3A3217; --note-ink: #2B240C;
+    --book: #3E9A72; --book-soft: #173327; --book-ink: #FFFFFF;
+    --warn: #F08A80; --warn-soft: #3A1E1C; --wait: #E0B34C;
+    --focus: #7FB0FF;
+  }
+}
+* { box-sizing: border-box; }
+/* A section that is not the open tab is hidden; the layout rules below must never show it. */
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--ground); color: var(--ink);
+  font: 17px/1.5 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+  padding-inline: max(16px, env(safe-area-inset-left)); padding-block: 0 48px;
+}
+.top {
+  display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px;
+  max-width: 760px; margin: 0 auto; padding-block: max(14px, env(safe-area-inset-top)) 6px;
+}
+.brand { font-weight: 700; font-size: 1.15rem; display: flex; align-items: center; gap: 8px; }
+.dot { width: 12px; height: 12px; border-radius: 50%; background: var(--book); display: inline-block; }
+.fresh { color: var(--ink-2); font-size: .9rem; }
+.fresh.stale { color: var(--wait); }
+.fresh.bad { color: var(--warn); }
+
+.tabs {
+  position: sticky; top: 0; z-index: 2; background: var(--ground);
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+  max-width: 760px; margin: 0 auto; padding-block: 8px;
+}
+.tabs button {
+  font: inherit; font-size: .95rem; font-weight: 600; padding: 9px 4px; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer;
+}
+.tabs button[aria-selected="true"] { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+
+main { max-width: 760px; margin: 0 auto; }
+.panel { display: grid; gap: 14px; padding-top: 6px; }
+h2 { font-size: 1.1rem; margin: 6px 0 0; }
+h3 { font-size: 1rem; margin: 0; }
+p { margin: 0; }
+.muted { color: var(--ink-2); font-size: .92rem; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; display: grid; gap: 10px; }
+.card.book { border-top: 6px solid var(--book); }
+.card.mine { background: var(--note-soft); border-color: var(--note); }
+.card.warn { background: var(--warn-soft); border-color: var(--warn); }
+.row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.row .amt { font-variant-numeric: tabular-nums; font-weight: 700; white-space: nowrap; }
+.list { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.list li { padding: 9px 0; border-top: 1px solid var(--line); display: grid; gap: 2px; }
+.list li:first-child { border-top: 0; padding-top: 0; }
+.chip { display: inline-block; font-size: .75rem; font-weight: 700; letter-spacing: .03em; text-transform: uppercase;
+        padding: 1px 7px; border-radius: 99px; background: var(--line); color: var(--ink); }
+.chip.verified { background: var(--book); color: var(--book-ink); }
+.chip.derived { background: var(--book-soft); color: var(--ink); }
+.chip.recorded { background: var(--note); color: var(--note-ink); }
+.chip.estimate, .chip.held { background: var(--warn-soft); color: var(--warn); }
+.chip.current { background: var(--book-soft); color: var(--ink); }
+.chip.superseded, .chip.withdrawn, .chip.duplicate { background: var(--line); color: var(--ink-2); }
+
+.kinds { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+.kinds button { text-align: left; }
+button, .btn {
+  font: inherit; font-weight: 600; padding: 11px 14px; border-radius: 9px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+}
+button.primary { background: var(--note); border-color: var(--note); color: var(--note-ink); }
+button.quiet { background: transparent; border-color: transparent; color: var(--ink-2); padding: 6px 8px; font-weight: 500; text-decoration: underline; }
+button:disabled { opacity: .5; cursor: default; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+form { display: grid; gap: 12px; }
+label { display: grid; gap: 4px; font-weight: 600; font-size: .95rem; }
+label .req { color: var(--warn); font-weight: 700; }
+input, select, textarea {
+  font: inherit; font-weight: 400; width: 100%; padding: 10px 11px; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+}
+textarea { min-height: 76px; resize: vertical; }
+.check { display: flex; gap: 10px; align-items: flex-start; font-weight: 500; }
+.check input { width: 22px; height: 22px; margin-top: 2px; flex: none; }
+.error { color: var(--warn); font-size: .88rem; font-weight: 600; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.sweep { background: var(--book-soft); border-radius: 8px; padding: 12px; display: grid; gap: 6px; }
+.sweep .total { font-size: 1.25rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.banner { background: var(--note-soft); border: 1px solid var(--note); border-radius: 8px; padding: 10px 12px; }
+.fig { display: grid; gap: 2px; }
+.fig .val { font-size: 1.35rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.figs { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+.toast {
+  position: fixed; left: 50%; bottom: max(18px, env(safe-area-inset-bottom)); transform: translateX(-50%);
+  background: var(--ink); color: var(--panel); padding: 10px 16px; border-radius: 99px; font-weight: 600;
+  max-width: calc(100% - 32px); z-index: 5; box-shadow: 0 6px 20px rgba(0,0,0,.25);
+}
+.noscript { padding: 24px; }
+@media (prefers-reduced-motion: no-preference) { .toast { transition: opacity .2s; } }
